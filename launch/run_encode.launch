@@ -1,0 +1,8 @@
+<launch>
+  <node pkg="ros_h264_streamer" type="image_encoder_node" name="image_encode" output="screen">
+    <param name="image_topic" value="/IMG_DATA0"/>
+    <param name="encoded_topic" value="/encoded_image"/>
+    <param name="q_level" value="100"/>
+    <param name="fps" value="10"/>
+  </node>
+</launch>

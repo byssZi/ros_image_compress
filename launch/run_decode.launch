@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="ros_h264_streamer" type="image_decoder_node" name="image_decode" output="screen">
+    <param name="image_restored_topic" value="/camera/image_raw_restore"/>
+    <param name="encoded_topic" value="/encoded_image"/>
+  </node>
+</launch>
