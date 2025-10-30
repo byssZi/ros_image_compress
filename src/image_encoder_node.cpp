@@ -6,7 +6,7 @@
 
 class ImageEncoderNode {
 public:
-    ImageEncoderNode(ros::NodeHandle& nh){
+    ImageEncoderNode(ros::NodeHandle& nh) : encoder_(640, 480, 20, 20, 1, "bgr8") {
         // 从参数服务器读取话题名称
         nh.param<std::string>("image_topic", image_topic_, "/camera/image_raw");
         nh.param<std::string>("encoded_topic", encoded_topic_, "/encoded_image");
@@ -28,12 +28,12 @@ private:
     std::string encoded_topic_;
     int q_level_;
     int fps_;
-
+    ros_h264_streamer::H264Encoder encoder_;
     void imageCallback(const sensor_msgs::ImageConstPtr& msg) {
         try {
             // 编码图像
-            ros_h264_streamer::H264Encoder encoder(msg->width, msg->height, q_level_, fps_, 1, msg->encoding);
-            ros_h264_streamer::H264EncoderResult res = encoder.encode(msg);
+            encoder_ = ros_h264_streamer::H264Encoder(msg->width, msg->height, q_level_, fps_, 1, msg->encoding);
+            ros_h264_streamer::H264EncoderResult res = encoder_.encode(msg);
 
             // 构造自定义消息
             msg_all::CompressImage encoded_msg;

@@ -5,7 +5,7 @@
 
 class ImageDecoderNode {
 public:
-    ImageDecoderNode(ros::NodeHandle& nh){
+    ImageDecoderNode(ros::NodeHandle& nh) : decoder_(640, 480) {
         // 从参数服务器读取话题名称
         nh.param<std::string>("image_restored_topic", image_restored_topic_, "/camera/image_raw_restore");
         nh.param<std::string>("encoded_topic", encoded_topic_, "/encoded_image");
@@ -24,15 +24,16 @@ private:
     ros::Publisher image_pub_;
     std::string image_restored_topic_;
     std::string encoded_topic_;
+    ros_h264_streamer::H264Decoder decoder_;
 
     void encodedCallback(const msg_all::CompressImagePtr& msg) {
         try {
             
-            ros_h264_streamer::H264Decoder decoder(msg->width, msg->height);
+            decoder_ = ros_h264_streamer::H264Decoder(msg->width, msg->height);
             // 解码图像
             sensor_msgs::ImagePtr decoded_image(new sensor_msgs::Image);
             uint8_t* data_ptr = msg->frame_data.data.data();
-            int len = decoder.decode(msg->frame_size, data_ptr, decoded_image);
+            int len = decoder_.decode(msg->frame_size, data_ptr, decoded_image);
             if (len > 0) {
                 // 发布解码后的图像
                 image_pub_.publish(decoded_image);
